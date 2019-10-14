@@ -9,6 +9,13 @@ namespace TablicaMinMax
 			var min = tab[0];
 			var max = tab[0];
 
+			Console.WriteLine("Zawartość tablicy: ");
+			foreach (var liczba in tab)
+			{
+				Console.Write(liczba.ToString() + " ");
+			}
+			Console.WriteLine();
+
 			for (int i = 1; i < tab.Length; i++)
 			{
 				if (tab[i] < min)
