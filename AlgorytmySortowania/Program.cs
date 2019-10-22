@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 
 namespace AlgorytmySortowania
 {
-	// Radix, Bogo
 	internal class Program
 	{
 		private static void Wypisz(int[] tab)
@@ -94,7 +94,7 @@ namespace AlgorytmySortowania
 			}
 		}
 
-		private static int[] MergeSort(int[] tab, int l, int r)
+		private static void MergeSort(int[] tab, int l, int r)
 		{
 			if (r > l)
 			{
@@ -103,11 +103,9 @@ namespace AlgorytmySortowania
 				MergeSort(tab, m + 1, r);
 				Merge(tab, l, m, r);
 			}
-
-			return tab;
 		}
 
-		private int Partition(int[] tablica, int p, int r)
+		private static int Partition(int[] tablica, int p, int r)
 		{
 			int x = tablica[p];
 			int i = p, j = r, w;
@@ -138,7 +136,7 @@ namespace AlgorytmySortowania
 			}
 		}
 
-		private void QuickSort(int[] tab, int p, int r)
+		private static void QuickSort(int[] tab, int p, int r)
 		{
 			int q;
 			if (p < r)
@@ -149,6 +147,75 @@ namespace AlgorytmySortowania
 			}
 		}
 
+		private static void RadixSort(int[] tab, int exp)
+		{
+			int i;
+			int[] output = new int[tab.Length];
+			int[] count = new int[10];
+
+			for (i = 0; i < 10; i++)
+			{
+				count[i] = 0;
+			}
+
+			for (i = 0; i < tab.Length; i++)
+			{
+				count[(tab[i] / exp) % 10]++;
+			}
+
+			for (i = 1; i < 10; i++)
+			{
+				count[i] += count[i - 1];
+			}
+
+			for (i = tab.Length - 1; i >= 0; i--)
+			{
+				output[count[(tab[i] / exp) % 10] - 1] = tab[i];
+				count[(tab[i] / exp) % 10]--;
+			}
+
+			for (i = 0; i < tab.Length; i++)
+			{
+				tab[i] = output[i];
+			}
+		}
+
+		private static void Pomieszaj(int[] tab)
+		{
+			var random = new Random();
+
+			for (int i = 0; i < tab.Length; i++)
+			{
+				int j = random.Next(0, tab.Length);
+				Zamien(tab, i, j);
+			}
+		}
+
+		private static bool BogoSort(int[] tab)
+		{
+			int[] posortowana = BubbleSort(tab);
+
+			for (int i = 0; i < 10000; i++)
+			{
+				Pomieszaj(tab);
+				bool czy = true;
+
+				for (int j = 0; j < tab.Length; j++)
+				{
+					if (tab[j] != posortowana[j])
+					{
+						czy = false;
+					}
+				}
+				if (czy)
+				{
+					Wypisz(tab);
+					return true;
+				}
+			}
+			return false;
+		}
+
 		private static void Main()
 		{
 			int[] tab = new int[] { 3, 4, 0, -5, 12, 7 };
@@ -156,11 +223,38 @@ namespace AlgorytmySortowania
 			Wypisz(tab);
 
 			Console.WriteLine("Bubble Sort: ");
-			Wypisz(BubbleSort(tab));
+			BubbleSort(tab);
+			Wypisz(tab);
 
+			tab = new int[] { 3, 4, 0, -5, 12, 7 };
 			Console.WriteLine("Merge Sort: ");
-			Wypisz(MergeSort(tab, 0, tab.Length - 1));
+			MergeSort(tab, 0, tab.Length - 1);
+			Wypisz(tab);
+
+			tab = new int[] { 3, 4, 0, -5, 12, 7 };
+			Console.WriteLine("Quick Sort: ");
+			QuickSort(tab, 0, tab.Length - 1);
+			Wypisz(tab);
+
+			tab = new int[] { 3, 4, 0, 55, 12, 7 };
+			Console.WriteLine("Radix Sort: ");
+			int max = tab.Max();
+			for (int exp = 1; max / exp > 0; exp *= 10)
+			{
+				RadixSort(tab, exp);
+			}
+			Wypisz(tab);
+
+			tab = new int[] { 3, 5, 2, 0 };
+			Console.WriteLine("Bogo Sort (dla 4 elementów, 10000 prób): ");
+			if (BogoSort(tab))
+			{
+				Console.WriteLine("Udało się!");
+			}
+			else
+			{
+				Console.WriteLine("Nie udało się.");
+			}
 		}
 	}
 }
-
